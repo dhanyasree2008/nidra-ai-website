@@ -171,5 +171,50 @@
       panel.hidden = !panel.hidden;
     }
   </script>
+<section id="patient-form" style="max-width:700px;margin:30px auto;padding:24px;background:#111827;border:1px solid #374151;border-radius:16px;color:#f5f7ff;">
+  <h2>Patient Monitoring — Demo</h2>
+  <p>Use fictional sample data only. This demo does not provide medical advice.</p>
+
+  <form id="demoForm">
+    <label for="patientId">Demo Patient ID</label><br>
+    <input id="patientId" required placeholder="DEMO001" style="width:100%;padding:10px;margin:8px 0 16px;">
+
+    <label for="testDate">Test date</label><br>
+    <input id="testDate" type="date" required style="width:100%;padding:10px;margin:8px 0 16px;">
+
+    <label for="progesterone">Sample progesterone value (demo only)</label><br>
+    <input id="progesterone" type="number" min="0" step="any" required placeholder="Example: 10" style="width:100%;padding:10px;margin:8px 0 16px;">
+
+    <button type="submit" style="padding:12px 18px;background:#a5b4fc;color:#111827;border:0;border-radius:8px;cursor:pointer;">Check demo change</button>
+  </form>
+
+  <p id="demoAlert" role="status" aria-live="polite"></p>
+</section>
+
+<script>
+document.getElementById("demoForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const id = document.getElementById("patientId").value.trim();
+  const date = document.getElementById("testDate").value;
+  const value = Number(document.getElementById("progesterone").value);
+  const previous = JSON.parse(sessionStorage.getItem("nidraDemo_" + id) || "null");
+  const alert = document.getElementById("demoAlert");
+
+  if (previous && previous.value !== value) {
+    alert.textContent = "Demo notice: the entered value changed from " +
+      previous.value + " to " + value +
+      ". This is not a medical risk assessment. Consult a qualified clinician about real results.";
+  } else {
+    alert.textContent = "Demo entry checked for " + date +
+      ". Submit a different value for this demo ID to see a change notice.";
+  }
+
+  sessionStorage.setItem("nidraDemo_" + id, JSON.stringify({
+    date: date,
+    value: value
+  }));
+});
+</script>
 </body>
 </html>
