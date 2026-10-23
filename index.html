@@ -216,5 +216,194 @@ document.getElementById("demoForm").addEventListener("submit", function(event) {
   }));
 });
 </script>
+<section id="nidra-monitor" style="max-width:900px;margin:30px auto;padding:24px;background:#111827;color:#f5f7ff;border:1px solid #374151;border-radius:16px;font-family:Arial,sans-serif">
+  <h2> NIDRA-AI | Monitoring Dashboard</h2>
+  <p>Prototype for demonstration only. Enter fictional sample data.</p>
+
+  <form id="monitorForm">
+    <label>Demo Patient ID</label>
+    <input id="mId" required placeholder="DEMO001" />
+    <br><br>
+
+    <label>Test date</label>
+    <input id="mDate" type="date" required />
+    <br><br>
+
+    <label>Heartbeat (beats per minute)</label>
+    <input id="mHeart" type="number" min="1" max="250" required placeholder="e.g. 75" />
+    <br><br>
+
+    <label>Body temperature (°C)</label>
+    <input id="mTemp" type="number" min="25" max="45" step="0.1" required placeholder="e.g. 36.8" />
+    <br><br>
+
+    <label>IVF stage</label>
+    <select id="mStage" required>
+      <option value="">Select stage</option>
+      <option>Consultation</option>
+      <option>Ovarian stimulation</option>
+      <option>Egg retrieval</option>
+      <option>Embryo transfer</option>
+      <option>Waiting for follow-up</option>
+    </select>
+    <br><br>
+
+    <label>Progesterone value (optional; demo only)</label>
+    <input id="mProg" type="number" min="0" step="any" placeholder="Sample value only" />
+    <br><br>
+
+    <label>Notes (no personal details)</label>
+    <input id="mNotes" maxlength="150" placeholder="Optional demo note" />
+    <br><br>
+
+    <button type="submit">Submit and Update Dashboard</button>
+  </form>
+
+  <p id="mMessage" role="status" aria-live="polite"></p>
+
+  <hr>
+  <h3>Latest Demo Entry</h3>
+  <div id="mLatest">No entries submitted yet.</div>
+
+  <h3>Change Notifications</h3>
+  <ul id="mAlerts">
+    <li>No changes detected yet.</li>
+  </ul>
+
+  <h3>Demo Entry History</h3>
+  <div style="overflow-x:auto">
+    <table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">
+      <thead>
+        <tr>
+          <th>Date</th><th>Demo ID</th><th>Heartbeat</th>
+          <th>Temperature °C</th><th>IVF stage</th><th>Progesterone</th>
+        </tr>
+      </thead>
+      <tbody id="mRows"></tbody>
+    </table>
+  </div>
+  <p><small>Demo only. Values are not medical thresholds or diagnoses.</small></p>
+</section>
+
+<style>
+#nidra-monitor input,
+#nidra-monitor select {
+  box-sizing:border-box;
+  width:100%;
+  max-width:500px;
+  padding:10px;
+  border-radius:6px;
+  margin-top:6px;
+}
+#nidra-monitor button {
+  padding:12px 18px;
+  border:0;
+  border-radius:8px;
+  background:#a5b4fc;
+  color:#111827;
+  font-weight:bold;
+  cursor:pointer;
+}
+#nidra-monitor th,
+#nidra-monitor td { text-align:left; }
+</style>
+
+<script>
+(function () {
+  const form = document.getElementById("monitorForm");
+  const message = document.getElementById("mMessage");
+  const latest = document.getElementById("mLatest");
+  const rows = document.getElementById("mRows");
+  const alerts = document.getElementById("mAlerts");
+  const storageKey = "nidraDemoDashboard";
+  let entries = [];
+
+  try {
+    entries = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+    if (!Array.isArray(entries)) entries = [];
+  } catch (error) {
+    entries = [];
+  }
+
+  function render() {
+    rows.replaceChildren();
+
+    entries.slice().reverse().forEach(function (entry) {
+      const tr = document.createElement("tr");
+      [
+        entry.date, entry.id, entry.heart,
+        entry.temp, entry.stage, entry.prog || "Not entered"
+      ].forEach(function (value) {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      });
+      rows.appendChild(tr);
+    });
+
+    if (entries.length) {
+      const e = entries[entries.length - 1];
+      latest.textContent =
+        "ID: " + e.id + " | Date: " + e.date +
+        " | Heartbeat: " + e.heart + " bpm" +
+        " | Temperature: " + e.temp + " °C" +
+        " | IVF stage: " + e.stage;
+    }
+  }
+
+  render();
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const entry = {
+      id: document.getElementById("mId").value.trim(),
+      date: document.getElementById("mDate").value,
+      heart: Number(document.getElementById("mHeart").value),
+      temp: Number(document.getElementById("mTemp").value),
+      stage: document.getElementById("mStage").value,
+      prog: document.getElementById("mProg").value,
+      notes: document.getElementById("mNotes").value.trim()
+    };
+
+    const previous = entries.slice().reverse().find(
+      function (e) { return e.id === entry.id; }
+    );
+
+    const changed = [];
+    if (previous) {
+      if (previous.heart !== entry.heart) changed.push("heartbeat");
+      if (previous.temp !== entry.temp) changed.push("temperature");
+      if (previous.stage !== entry.stage) changed.push("IVF stage");
+      if (previous.prog !== entry.prog) changed.push("progesterone entry");
+    }
+
+    entries.push(entry);
+
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(entries));
+    } catch (error) {
+      message.textContent = "Browser session storage is unavailable.";
+      entries.pop();
+      return;
+    }
+
+    render();
+    alerts.replaceChildren();
+
+    const li = document.createElement("li");
+    li.textContent = previous && changed.length
+      ? "Demo change detected for " + entry.id + ": " +
+        changed.join(", ") + " changed. This is not a medical warning."
+      : "Entry added for " + entry.id +
+        ". No previous entry to compare, or no tracked values changed.";
+    alerts.appendChild(li);
+
+    message.textContent =
+      "Demo entry added to the dashboard for " + entry.date + ".";
+    form.reset();
+  });
+})();
+</script>
 </body>
 </html>
