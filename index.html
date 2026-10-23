@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIDRA-AI | IVF Support</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #080d1c;
+      color: #f5f7ff;
+      line-height: 1.6;
+    }
+    header {
+      padding: 22px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #24304a;
+    }
+    .logo { font-size: 26px; font-weight: bold; color: #a5b4fc; }
+    nav a {
+      color: #e2e8f0;
+      text-decoration: none;
+      margin-left: 18px;
+    }
+    .hero {
+      padding: 90px 8%;
+      min-height: 470px;
+      background: radial-gradient(ellipse at top right, #28346a, #080d1c 65%);
+    }
+    .tag {
+      color: #67e8f9;
+      letter-spacing: 3px;
+      font-size: 13px;
+    }
+    h1 { font-size: clamp(38px, 6vw, 68px); line-height: 1.1; max-width: 750px; }
+    h1 span { color: #a5b4fc; }
+    .hero p { max-width: 650px; color: #cbd5e1; font-size: 18px; }
+    .btn {
+      display: inline-block;
+      margin: 15px 10px 0 0;
+      padding: 13px 22px;
+      border-radius: 8px;
+      background: #818cf8;
+      color: #080d1c;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .secondary { background: transparent; color: white; border: 1px solid #818cf8; }
+    section { padding: 55px 8%; }
+    h2 { font-size: 32px; }
+    .muted { color: #aab7ce; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      padding: 24px;
+      background: #111a2e;
+      border: 1px solid #293752;
+      border-radius: 15px;
+    }
+    .card h3 { color: #a5b4fc; }
+    .symbol { font-size: 34px; }
+    .notice {
+      background: #202039;
+      border-left: 4px solid #67e8f9;
+      padding: 18px;
+      border-radius: 8px;
+    }
+    footer {
+      padding: 25px 8%;
+      border-top: 1px solid #293752;
+      color: #aab7ce;
+    }
+    @media (max-width: 650px) {
+      header { align-items: flex-start; flex-direction: column; gap: 12px; }
+      nav a { margin: 0 12px 0 0; }
+      .hero { padding-top: 55px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">✦ NIDRA-AI</div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#learn">Learn IVF</a>
+      <a href="#journey">IVF Journey</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="tag">AI + FERTILITY EDUCATION</div>
+      <h1>Smarter Insights.<br><span>Safer IVF Journeys.</span></h1>
+      <p>
+        Understand factors associated with IVF pregnancy loss,
+        explore fertility education, and prepare for informed
+        conversations with your fertility specialist.
+      </p>
+      <a class="btn" href="#learn">Explore IVF Health ↗</a>
+      <a class="btn secondary" href="#about">Discover NIDRA-AI</a>
+    </section>
+
+    <section id="learn">
+      <h2>Understand Your IVF Journey</h2>
+      <p class="muted">Knowledge can help you ask informed questions and make decisions with your care team.</p>
+      <div class="grid">
+        <article class="card">
+          <div class="symbol">🧬</div>
+          <h3>Embryo Development</h3>
+          <p class="muted">Learn about embryo development and how chromosome abnormalities may affect pregnancy outcomes.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">🌱</div>
+          <h3>Implantation</h3>
+          <p class="muted">Discover how an embryo attaches to the uterine lining and why outcomes can vary.</p>
+        </article>
+        <article class="card">
+          <div class="symbol">🩺</div>
+          <h3>Hormone Education</h3>
+          <p class="muted">Understand the roles of estrogen and progesterone in preparing and supporting the uterine lining.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="journey">
+      <h2>Your IVF Journey</h2>
+      <div class="grid">
+        <article class="card"><h3>01 · Preparation</h3><p class="muted">Learn about fertility consultations and treatment planning.</p></article>
+        <article class="card"><h3>02 · Embryo Transfer</h3><p class="muted">Explore what happens during embryo transfer and what to ask your clinic.</p></article>
+        <article class="card"><h3>03 · Follow-up</h3><p class="muted">Understand why follow-up testing and your care team's guidance matter.</p></article>
+      </div>
+    </section>
+
+    <section id="about">
+      <h2>About NIDRA-AI</h2>
+      <p class="muted">NIDRA-AI is an educational website prototype exploring how AI-assisted information may support fertility education and informed clinical conversations.</p>
+      <div class="notice">
+        <strong>Important medical notice</strong>
+        <p>This prototype does not diagnose conditions, calculate personal miscarriage risk, or prevent pregnancy loss. IVF outcomes depend on many factors, and not all pregnancy losses can be prevented. Always consult a qualified fertility specialist about personal medical decisions.</p>
+      </div>
+      <button class="btn" onclick="showQuestions()">Prepare Questions for My Doctor</button>
+      <div id="questions" class="card" hidden>
+        <h3>Questions to discuss with your specialist</h3>
+        <ul>
+          <li>What factors are relevant to my individual treatment?</li>
+          <li>What is the purpose of each prescribed medication?</li>
+          <li>Which symptoms mean I should contact the clinic?</li>
+          <li>What follow-up appointments or tests should I expect?</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 NIDRA-AI · Educational prototype · Not a substitute for professional medical care.</p>
+  </footer>
+
+  <script>
+    function showQuestions() {
+      const panel = document.getElementById("questions");
+      panel.hidden = !panel.hidden;
+    }
+  </script>
+</body>
+</html>
