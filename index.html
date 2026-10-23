@@ -405,5 +405,221 @@ document.getElementById("demoForm").addEventListener("submit", function(event) {
   });
 })();
 </script>
+<section id="nidra-dashboard">
+  <style>
+    #nidra-dashboard {
+      background:#07111f;color:#edf5ff;padding:24px;
+      border-radius:18px;font-family:Arial,sans-serif;
+      max-width:1100px;margin:30px auto;
+    }
+    #nidra-dashboard h2,#nidra-dashboard h3 {margin-top:8px}
+    #nidra-dashboard .nd-sub {color:#9fb2ca}
+    #nidra-dashboard .nd-grid {
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:14px;margin:18px 0;
+    }
+    #nidra-dashboard .nd-card {
+      background:#111f32;border:1px solid #263b54;
+      border-radius:14px;padding:18px;
+    }
+    #nidra-dashboard .nd-value {font-size:28px;font-weight:bold;color:#5eead4}
+    #nidra-dashboard label {display:block;margin-top:12px}
+    #nidra-dashboard input,#nidra-dashboard select {
+      box-sizing:border-box;width:100%;padding:11px;margin-top:6px;
+      background:#07111f;color:white;border:1px solid #3b5069;border-radius:7px;
+    }
+    #nidra-dashboard button {
+      margin-top:16px;padding:12px 18px;border:0;border-radius:8px;
+      background:#5eead4;color:#07111f;font-weight:bold;cursor:pointer;
+    }
+    #nidra-dashboard .nd-table {overflow-x:auto}
+    #nidra-dashboard table {width:100%;border-collapse:collapse;min-width:520px}
+    #nidra-dashboard th,#nidra-dashboard td {
+      padding:10px;border-bottom:1px solid #263b54;text-align:left;
+    }
+    #nidra-dashboard svg {width:100%;height:180px;display:block}
+  </style>
+
+  <h2>NIDRA-AI Health Dashboard</h2>
+  <p class="nd-sub">Daily monitoring prototype · Sample data only</p>
+
+  <div class="nd-grid">
+    <div class="nd-card">
+      <p class="nd-sub">Latest heartbeat</p>
+      <div class="nd-value" id="ndHeart">— BPM</div>
+      <small>Manually entered reading</small>
+    </div>
+    <div class="nd-card">
+      <p class="nd-sub">Latest temperature</p>
+      <div class="nd-value" id="ndTemp">— °C</div>
+      <small>Manually entered reading</small>
+    </div>
+    <div class="nd-card">
+      <p class="nd-sub">Entries recorded</p>
+      <div class="nd-value" id="ndCount">0</div>
+      <small>In this browser session</small>
+    </div>
+  </div>
+
+  <div class="nd-card">
+    <h3>Add a daily reading</h3>
+    <form id="ndForm">
+      <label for="ndDate">Date</label>
+      <input id="ndDate" type="date" required>
+
+      <label for="ndId">Demo patient ID</label>
+      <input id="ndId" placeholder="DEMO001" required>
+
+      <label for="ndHeartInput">Heartbeat (BPM)</label>
+      <input id="ndHeartInput" type="number" min="1" max="250" required>
+
+      <label for="ndTempInput">Temperature (°C)</label>
+      <input id="ndTempInput" type="number" min="25" max="45" step="0.1" required>
+
+      <label for="ndStage">IVF stage</label>
+      <select id="ndStage" required>
+        <option value="">Choose a stage</option>
+        <option>Consultation</option>
+        <option>Ovarian stimulation</option>
+        <option>Egg retrieval</option>
+        <option>Embryo transfer</option>
+        <option>Follow-up</option>
+      </select>
+
+      <button type="submit">Save demo reading</button>
+    </form>
+    <p id="ndMessage" role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="nd-card" style="margin-top:14px">
+    <h3>Heartbeat trend</h3>
+    <p class="nd-sub">Recorded readings only — not a medical assessment.</p>
+    <svg id="ndChart" viewBox="0 0 600 180" role="img" aria-label="Heartbeat trend chart">
+      <text x="20" y="35" fill="#9fb2ca">Add readings to display the trend.</text>
+    </svg>
+  </div>
+
+  <div class="nd-card" style="margin-top:14px">
+    <h3>Daily history</h3>
+    <div class="nd-table">
+      <table>
+        <thead><tr><th>Date</th><th>Demo ID</th><th>Heart BPM</th><th>Temp °C</th><th>IVF stage</th></tr></thead>
+        <tbody id="ndRows"></tbody>
+      </table>
+    </div>
+    <h3>Change notice</h3>
+    <p id="ndAlert" role="status" aria-live="polite">No entries yet.</p>
+  </div>
+
+  <p class="nd-sub"><small>Prototype only. No automatic sensors, secure database, or medical diagnosis. Do not enter real patient information.</small></p>
+</section>
+
+<script>
+(function () {
+  const form = document.getElementById("ndForm");
+  if (!form || form.dataset.ready) return;
+  form.dataset.ready = "yes";
+
+  const key = "nidraDashboardDemo";
+  let data = [];
+  try {
+    data = JSON.parse(sessionStorage.getItem(key) || "[]");
+    if (!Array.isArray(data)) data = [];
+  } catch (e) { data = []; }
+
+  const $ = id => document.getElementById(id);
+  $("ndDate").value = new Date().toISOString().slice(0, 10);
+
+  function render() {
+    $("ndRows").replaceChildren();
+    data.forEach(item => {
+      const tr = document.createElement("tr");
+      [item.date,item.id,item.heart,item.temp,item.stage].forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      });
+      $("ndRows").appendChild(tr);
+    });
+
+    $("ndCount").textContent = data.length;
+    if (data.length) {
+      const last = data[data.length - 1];
+      $("ndHeart").textContent = last.heart + " BPM";
+      $("ndTemp").textContent = last.temp + " °C";
+    }
+
+    const svg = $("ndChart");
+    svg.replaceChildren();
+    if (!data.length) {
+      const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+      t.setAttribute("x","20"); t.setAttribute("y","35");
+      t.setAttribute("fill","#9fb2ca");
+      t.textContent = "Add readings to display the trend.";
+      svg.appendChild(t);
+      return;
+    }
+
+    const values = data.slice(-12);
+    const min = Math.min(...values.map(x => x.heart)) - 5;
+    const max = Math.max(...values.map(x => x.heart)) + 5;
+    const points = values.map((x,i) => {
+      const px = 25 + i * (550 / Math.max(1, values.length - 1));
+      const py = 150 - ((x.heart - min) / Math.max(1,max-min)) * 115;
+      return px + "," + py;
+    }).join(" ");
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    line.setAttribute("points",points);
+    line.setAttribute("fill","none");
+    line.setAttribute("stroke","#5eead4");
+    line.setAttribute("stroke-width","3");
+    svg.appendChild(line);
+
+    values.forEach((x,i) => {
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx",25+i*(550/Math.max(1,values.length-1)));
+      c.setAttribute("cy",150-((x.heart-min)/Math.max(1,max-min))*115);
+      c.setAttribute("r","4"); c.setAttribute("fill","#93c5fd");
+      svg.appendChild(c);
+    });
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const item = {
+      date:$("ndDate").value,
+      id:$("ndId").value.trim(),
+      heart:Number($("ndHeartInput").value),
+      temp:Number($("ndTempInput").value),
+      stage:$("ndStage").value
+    };
+    const previous = data.slice().reverse().find(x => x.id === item.id);
+    const changes = [];
+    if (previous && previous.heart !== item.heart) changes.push("heartbeat");
+    if (previous && previous.temp !== item.temp) changes.push("temperature");
+
+    data.push(item);
+    try {
+      sessionStorage.setItem(key,JSON.stringify(data));
+    } catch (e) {
+      data.pop();
+      $("ndMessage").textContent = "Could not save this browser-session demo.";
+      return;
+    }
+
+    render();
+    $("ndAlert").textContent = changes.length
+      ? "Demo change detected: " + changes.join(" and ") +
+        " changed for " + item.id + ". This is not a medical warning."
+      : "Reading added. A previous reading is needed to compare changes.";
+    $("ndMessage").textContent = "Demo reading added to the dashboard.";
+    form.reset();
+    $("ndDate").value = new Date().toISOString().slice(0,10);
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
