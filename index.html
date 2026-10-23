@@ -153,6 +153,140 @@ input:focus, select:focus, textarea:focus {
     font-size: 25px;
   }
 }
+<style>
+/* NIDRA-AI premium animation theme */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top left, #123a50 0%, transparent 45%),
+    linear-gradient(135deg, #06101f, #0b1e32, #071426);
+  color: #edfaff;
+  font-family: Arial, sans-serif;
+}
+
+/* Smooth entrance for the main page */
+body {
+  animation: pageAppear 0.9s ease-out both;
+}
+
+@keyframes pageAppear {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Headings glow gently */
+h1, h2 {
+  color: #75f0dc;
+  text-shadow: 0 0 18px rgba(70, 230, 210, 0.18);
+}
+
+h1 {
+  animation: titleAppear 0.8s ease-out both;
+}
+
+@keyframes titleAppear {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dashboard panels and cards */
+section, .card, form, article {
+  border: 1px solid rgba(104, 230, 218, 0.2);
+  border-radius: 18px;
+  transition: border-color 0.3s ease,
+              box-shadow 0.3s ease,
+              transform 0.3s ease;
+}
+
+section:hover, .card:hover, article:hover {
+  border-color: rgba(104, 230, 218, 0.65);
+  box-shadow: 0 8px 28px rgba(0, 220, 200, 0.09);
+  transform: translateY(-3px);
+}
+
+/* Buttons */
+button {
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease,
+              filter 0.25s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 18px rgba(74, 230, 210, 0.25);
+  filter: brightness(1.08);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* Inputs */
+input, select, textarea {
+  transition: border-color 0.25s ease,
+              box-shadow 0.25s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #68e6d8;
+  box-shadow: 0 0 0 3px rgba(104, 230, 216, 0.13);
+}
+
+/* Gentle heartbeat pulse for heart icons */
+.heartbeat, .heart-icon {
+  animation: heartPulse 1.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.12); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+}
+
+/* Animated teal highlight */
+header {
+  border-bottom: 1px solid rgba(104, 230, 218, 0.25);
+}
+
+a {
+  color: #75e9df;
+  transition: color 0.25s ease;
+}
+
+a:hover {
+  color: #ffffff;
+}
+
+/* Mobile-friendly layout */
+img, canvas, svg {
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  section, .card, form, article {
+    border-radius: 14px;
+  }
+
+  body {
+    overflow-wrap: break-word;
+  }
+}
+
+/* Respect visitors who prefer less movement */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
   </style>
 </head>
 <body>
